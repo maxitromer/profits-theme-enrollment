@@ -1,5 +1,8 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
 
 // Integrate Woocommerce Data with Profits Theme
 function woocommerce_to_profits_theme ( $profits_url, $sku, $status, $email, $fname ) {
