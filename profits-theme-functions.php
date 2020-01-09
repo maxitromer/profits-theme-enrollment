@@ -88,13 +88,21 @@ function push_profits_theme($profits_url, $email, $id_producto, $transaction_typ
 	$curl_connection = 
 	  curl_init( $profits_url . '?mode=register&type=' . $transaction_type );
 	 
+	if (!$curl_connection) {
+
+		$return_value = "ERROR: Couldn't initialize a cURL handle";
+
+	    return $return_value;
+
+	}
+	 
 	// Configura opciones
 	curl_setopt($curl_connection, CURLOPT_CONNECTTIMEOUT, 30);
-	curl_setopt($curl_connection, CURLOPT_USERAGENT, 
-	  "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)");
 	curl_setopt($curl_connection, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($curl_connection, CURLOPT_SSL_VERIFYPEER, false);
+	curl_setopt($curl_connection, CURLOPT_HEADER        , true);  // we want headers
+	curl_setopt($curl_connection, CURLOPT_NOBODY        , true);  // we don't need body
 	curl_setopt($curl_connection, CURLOPT_FOLLOWLOCATION, 1);
+	curl_setopt($curl_connection, CURLOPT_POST          , 1);
 	 
 	// Configura los datos a ser enviados
 	curl_setopt($curl_connection, CURLOPT_POSTFIELDS, $post_string);
@@ -102,10 +110,43 @@ function push_profits_theme($profits_url, $email, $id_producto, $transaction_typ
 	// Realiza la solicitud
 	$result = curl_exec($curl_connection);
 
-	var_dump($result);
 
-	// Cierra la coneccion
-	curl_close($curl_connection);
+	if ( empty( $result ) ) {
+
+	    // some kind of error happened
+	    $error  = curl_error( $curl_connection );
+
+	    curl_close( $curl_connection ); // close cURL handler
+
+	    $return_value = "ERROR: " . $err;
+
+	    return $return_value;
+
+	} else {
+
+	    $info = curl_getinfo( $curl_connection );
+
+	    curl_close( $curl_connection ); // close cURL handler
+
+	    if ( empty($info['http_code']) ) {
+
+	    		$return_value = "ERROR: No HTTP code was returned";
+
+	    		return $return_value;
+
+	    } else {
+
+	        // load the HTTP codes
+	        $http_codes = parse_ini_file("curl_results.ini");
+	       
+	        // echo results
+	        $return_value = "RESULT CODE: " . $info['http_code'] . " - STATUS: " . $http_codes[$info['http_code']] . " - TOTAL TIME: " . $info['total_time'] . " seconds";
+
+	        return $return_value;
+
+	    }
+
+	}
 
 }
 
