@@ -4,7 +4,7 @@
 Plugin Name: Profits Theme Enrollment
 Plugin URI: https://github.com/maxitromer/profits-theme-enrollment
 Description: Add Woocommerce clients to your Profits Theme Courses
-Version: 0.1.1
+Version: 0.1.2
 Author: Maxi Tromer
 Author URI: https://github.com/maxitromer
 Developer: Maxi Tromer
